@@ -1,9 +1,8 @@
 package softserve.spark
 
-import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
 import org.apache.spark.sql.functions.desc
-
-import java.net._
+import org.apache.spark.sql.{DataFrame, Dataset, SparkSession}
+import softserve.spark.extractors.{Domain, Email, Link}
 
 object Application {
 
@@ -42,23 +41,14 @@ object Application {
   private def extractDomain(file: Dataset[String], spark: SparkSession) = {
     import spark.implicits.newStringEncoder
 
-    val getHostFromUrl = (url: String) => {
-      val extractedUrl = url.substring(url.indexOf("http"), url.length)
-      new URL(extractedUrl).getHost
-    }
-
-    val getHostFromMail = (url: String) => url
-      .substring(url.indexOf("@") + 1, url.length)
-      .replace("?", "")
-
     file
       .filter(_.nonEmpty)
-      .map(line => {
-        if (line.contains("http://") || line.contains("https://")) getHostFromUrl(line)
-        else if (line.contains("@")) getHostFromMail(line)
-        else if (line.matches("[*.*]")) line
-        else ""
-      })
+      .map {
+        case Link(line) => Link.getHostFromUrl(line)
+        case Email(line) => Email.getHostFromMail(line)
+        case Domain(domain) => domain
+        case _ => ""
+      }
       .filter(_.nonEmpty)
   }
 }
