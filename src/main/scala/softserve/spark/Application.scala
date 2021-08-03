@@ -44,8 +44,8 @@ object Application {
     file
       .filter(_.nonEmpty)
       .map {
-        case Link(line) => Link.getHostFromUrl(line)
-        case Email(line) => Email.getHostFromMail(line)
+        case Link(link) => link
+        case Email(email) => email
         case Domain(domain) => domain
         case _ => ""
       }

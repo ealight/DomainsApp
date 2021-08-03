@@ -1,15 +1,13 @@
 package softserve.spark.extractors
 
 object Email {
-  def getHostFromMail(url: String): String = {
-    url
+  def unapply(arg: String): Option[String] = {
+    val getHostFromMail = (url: String) => url
       .splitAt(url.indexOf("@") + 1)._2
       .replace("?", "")
-  }
 
-  def unapply(arg: String): Option[String] = {
     if (arg.contains("@"))
-      Some(arg)
+      Some(getHostFromMail(arg))
     else None
   }
 }
