@@ -2,8 +2,8 @@ package softserve.spark.extractors
 
 object Domain {
   def unapply(arg: String): Option[String] = {
-    if (arg.matches("[*.*]"))
+    if (arg.contains(".")) {
       Some(arg)
-    else None
+    } else None
   }
 }
